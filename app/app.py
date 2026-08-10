@@ -3,13 +3,13 @@ from pathlib import Path
 
 st.set_page_config(
     page_title="IBM Smart Healthcare Analytics Platform",
-    page_icon="🏥",
+    page_icon="hospital",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # Load custom style
-style_path = Path("app/styles/style.css")
+style_path = Path(__file__).resolve().parent / "styles" / "style.css"
 if style_path.exists():
     with open(style_path, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -17,7 +17,7 @@ if style_path.exists():
 st.sidebar.title("IBM Healthcare AI")
 st.sidebar.caption("Disease Prediction & Analytics")
 
-st.title("🏥 IBM Smart Healthcare Analytics Platform")
+st.title("IBM Smart Healthcare Analytics Platform")
 st.markdown(
     """
     Welcome to the AI-powered healthcare analytics dashboard.

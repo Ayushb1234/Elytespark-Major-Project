@@ -1,27 +1,128 @@
-import streamlit as st
+import sys
+from pathlib import Path
 import pandas as pd
-from app.components.utils import load_data
 
-st.title("📊 Dataset Analytics")
+APP_DIR = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+for path in (APP_DIR, PROJECT_ROOT):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
+
+
+import streamlit as st
+from components.utils import load_data
+
+
+st.title("Dataset Analytics")
+
 
 df = load_data()
 
-st.subheader("Dataset shape")
-st.write(df.shape)
 
-st.subheader("Columns")
-st.write(df.columns.tolist())
+# ============================================================
+# DATASET SIZE
+# ============================================================
 
-st.subheader("Data types")
-st.dataframe(df.dtypes.astype(str).reset_index().rename(columns={"index": "Column", 0: "Dtype"}), use_container_width=True)
+st.subheader("Dataset Shape")
 
-st.subheader("Missing values")
-missing = df.isnull().sum().sort_values(ascending=False)
-st.dataframe(missing.reset_index().rename(columns={"index": "Column", 0: "Missing Values"}), use_container_width=True)
+col1, col2 = st.columns(2)
 
-st.subheader("Target distribution")
+col1.metric(
+    "Rows",
+    f"{df.shape[0]:,}"
+)
+
+col2.metric(
+    "Columns",
+    f"{df.shape[1]:,}"
+)
+
+
+# ============================================================
+# COLUMNS
+# ============================================================
+
+st.subheader("Dataset Columns")
+
+st.write(
+    df.columns.tolist()
+)
+
+
+# ============================================================
+# DATA TYPES
+# ============================================================
+
+st.subheader("Data Types")
+
+dtype_df = pd.DataFrame({
+    "Column": df.columns,
+    "Data Type": df.dtypes.astype(str).values
+})
+
+st.dataframe(
+    dtype_df,
+    use_container_width=True
+)
+
+
+# ============================================================
+# MISSING VALUES
+# ============================================================
+
+st.subheader("Missing Values")
+
+missing_df = (
+    df.isnull()
+    .sum()
+    .sort_values(ascending=False)
+    .reset_index()
+)
+
+missing_df.columns = [
+    "Column",
+    "Missing Values"
+]
+
+st.dataframe(
+    missing_df,
+    use_container_width=True
+)
+
+
+# ============================================================
+# TARGET DISTRIBUTION
+# ============================================================
+
 if "label" in df.columns:
-    st.dataframe(df["label"].value_counts().reset_index().rename(columns={"index": "Label", "label": "Count"}), use_container_width=True)
 
-st.subheader("Preview")
-st.dataframe(df.head(50), use_container_width=True)
+    st.subheader("Disease Prediction Target")
+
+    target_counts = (
+        df["label"]
+        .value_counts()
+        .reset_index()
+    )
+
+    target_counts.columns = [
+        "Label",
+        "Count"
+    ]
+
+    st.dataframe(
+        target_counts,
+        use_container_width=True
+    )
+
+
+# ============================================================
+# DATA PREVIEW
+# ============================================================
+
+st.subheader("Data Preview")
+
+st.dataframe(
+    df.head(50),
+    use_container_width=True
+)

@@ -3,11 +3,14 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-DATA_PATH = "data/processed/clean_data.csv"
-MODEL_PATH = "models/best_model.pkl"
-PREPROCESSOR_PATH = "models/preprocessor.pkl"
-LABEL_ENCODER_PATH = "models/label_encoder.pkl"
-FEATURE_NAMES_PATH = "models/feature_names.pkl"
+APP_DIR = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "clean_data.csv"
+MODEL_PATH = PROJECT_ROOT / "models" / "best_model.pkl"
+PREPROCESSOR_PATH = PROJECT_ROOT / "models" / "preprocessor.pkl"
+LABEL_ENCODER_PATH = PROJECT_ROOT / "models" / "label_encoder.pkl"
+FEATURE_NAMES_PATH = PROJECT_ROOT / "models" / "feature_names.pkl"
 
 
 @st.cache_data
@@ -32,9 +35,8 @@ def load_label_encoder():
 
 @st.cache_resource
 def load_feature_names():
-    p = Path(FEATURE_NAMES_PATH)
-    if p.exists():
-        return joblib.load(p)
+    if FEATURE_NAMES_PATH.exists():
+        return joblib.load(FEATURE_NAMES_PATH)
     return None
 
 
@@ -47,6 +49,8 @@ def safe_metric(value):
 
 def list_image_files(folder):
     folder = Path(folder)
+    if not folder.is_absolute():
+        folder = PROJECT_ROOT / folder
     if not folder.exists():
         return []
     return sorted([p for p in folder.iterdir() if p.suffix.lower() in [".png", ".jpg", ".jpeg", ".webp"]])
