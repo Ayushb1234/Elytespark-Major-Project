@@ -59,6 +59,12 @@ Raw Healthcare Data
 
 ---
 
+## Project Report - https://drive.google.com/file/d/1_9ZuqCvcT5wRkNU7mUHtrmVAga33N2LZ/view?usp=sharing
+
+
+## Documentation - https://docs.google.com/document/d/1lIEAJ52XN7Bz5DdSRCGBraA4Ymdy2tBP/edit?usp=sharing&ouid=118205314568634968757&rtpof=true&sd=true
+
+
 ## 🎯 Project Objectives
 
 * 📥 Collect and prepare healthcare data
