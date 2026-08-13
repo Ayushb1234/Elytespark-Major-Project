@@ -79,10 +79,15 @@ def display_pyplot(fig):
 
 
 def display_image(path):
+    path = Path(path)
+    if not path.exists():
+        st.warning(f"Image not found: {path.relative_to(PROJECT_ROOT)}")
+        return
+
     try:
-        st.image(str(path), use_container_width=True)
+        st.image(path.read_bytes(), use_container_width=True)
     except TypeError:
-        st.image(str(path), use_column_width=True)
+        st.image(path.read_bytes(), use_column_width=True)
 
 
 def clean_title(value):
