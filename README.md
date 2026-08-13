@@ -1294,7 +1294,7 @@ The strongest aspect of the project is its **leakage-aware modeling approach**. 
 
 ### 📂 GitHub
 
-`<YOUR_GITHUB_REPOSITORY_URL>`
+[View GitHub Repository](https://github.com/Ayushb1234/Elytespark-Major-Project)
 
 ### 📊 Dashboard
 
