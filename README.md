@@ -570,6 +570,13 @@ These variables were investigated as potential risk indicators.
 
 ---
 
+## Screenshot:
+# -----------------
+D:\programming\programming\python\age&genderdetection\yolov9\Resume History\Elytespark Major Project\IBM-Healthcare-AI\outputs\figures\age_boxplot.png
+
+
+
+
 ## 🟢 Module 5 — Feature Engineering & Preprocessing
 
 ### Objective
