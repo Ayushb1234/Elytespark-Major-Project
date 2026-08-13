@@ -1313,6 +1313,13 @@ The strongest aspect of the project is its **leakage-aware modeling approach**. 
 > *Built with Python, Machine Learning, Explainable AI and Streamlit.*
 
 ---
+---
+
+## 📄 License
+
+This project is released for academic and educational purposes.
+
+---
 
 <p align="center">
 
