@@ -572,7 +572,40 @@ These variables were investigated as potential risk indicators.
 
 ## Screenshot:
 # -----------------
-D:\programming\programming\python\age&genderdetection\yolov9\Resume History\Elytespark Major Project\IBM-Healthcare-AI\outputs\figures\age_boxplot.png
+<img width="2370" height="1166" alt="age_boxplot" src="https://github.com/user-attachments/assets/e1027d1f-97fe-4e64-aad9-0bae1d080dd3" />
+<img width="2370" height="1466" alt="age_distribution" src="https://github.com/user-attachments/assets/2d3912be-cdb3-4857-944c-dab6780d56e9" />
+<img width="2371" height="1466" alt="alcohol_intake_distribution" src="https://github.com/user-attachments/assets/346416d6-25b8-493f-960e-467357b02355" />
+<img width="2370" height="1166" alt="bmi_boxplot" src="https://github.com/user-attachments/assets/5466c373-ab13-4488-addb-0a88fae9c81d" />
+<img width="2371" height="1466" alt="bmi_distribution" src="https://github.com/user-attachments/assets/407f138b-f1c6-4ce4-a10a-a41cb34cb5a3" />
+<img width="2370" height="1166" alt="cholesterol_boxplot" src="https://github.com/user-attachments/assets/85a594e0-40c9-484a-aaee-bf25f85373f7" />
+<img width="2371" height="1466" alt="cholesterol_distribution" src="https://github.com/user-attachments/assets/3485b989-b896-471d-bd29-94eb819c9f06" />
+<img width="600" height="500" alt="confusion_matrix" src="https://github.com/user-attachments/assets/28c0dddc-9d53-4cdf-93f7-24e0b7c2e5e0" />
+<img width="4915" height="4166" alt="correlation_heatmap" src="https://github.com/user-attachments/assets/3b8c77fb-94a8-4266-a684-1390e33e1161" />
+<img width="2371" height="1466" alt="crp_level_distribution" src="https://github.com/user-attachments/assets/d92bcb3a-5cc7-4f60-ab69-58da87c835c8" />
+<img width="2370" height="1166" alt="diastolic_bp_boxplot" src="https://github.com/user-attachments/assets/501ee3f5-6688-4d92-a1aa-3c7cf5ec7197" />
+<img width="2371" height="1466" alt="diastolic_bp_distribution" src="https://github.com/user-attachments/assets/04b65609-ec0b-43f8-8f1d-c2c06df5fa0d" />
+<img width="2970" height="1765" alt="disease_by_gender" src="https://github.com/user-attachments/assets/d8d68449-2415-49c4-8998-5ad2f178439f" />
+<img width="3268" height="2365" alt="feature_importance" src="https://github.com/user-attachments/assets/4b3cb169-6d9c-4d3a-bb4f-cef8c325211b" />
+<img width="2370" height="1166" alt="glucose_boxplot" src="https://github.com/user-attachments/assets/1d58bf50-d1ef-4c19-8639-e2c04b38fed5" />
+<img width="2371" height="1466" alt="glucose_distribution" src="https://github.com/user-attachments/assets/bbf0730d-cf80-42cf-a7d8-f8f522baba47" />
+<img width="2370" height="1166" alt="hdl_boxplot" src="https://github.com/user-attachments/assets/a42cdae2-32af-40a8-9f5d-e9cac84025df" />
+<img width="2371" height="1466" alt="hdl_distribution" src="https://github.com/user-attachments/assets/f9d192ca-61c1-4544-9d83-267cb7e966c7" />
+<img width="2370" height="1166" alt="heart_rate_boxplot" src="https://github.com/user-attachments/assets/70c257d3-3526-4ba9-b698-faa9049e8c40" />
+<img width="2371" height="1466" alt="heart_rate_distribution" src="https://github.com/user-attachments/assets/aaff0e63-0f12-40ff-ab0a-698b08d13118" />
+<img width="2371" height="1466" alt="homocysteine_level_distribution" src="https://github.com/user-attachments/assets/fd562901-9aaf-4faa-a27b-4a7d15e0f321" />
+<img width="2370" height="1166" alt="ldl_boxplot" src="https://github.com/user-attachments/assets/af37959e-73a6-4792-bc1b-a884e219f8b4" />
+<img width="2371" height="1466" alt="ldl_distribution" src="https://github.com/user-attachments/assets/8ea9a46c-368d-46f1-91a3-2c0e2010c849" />
+<img width="2970" height="1765" alt="learning_curve" src="https://github.com/user-attachments/assets/bb531061-f9c5-4e2c-b993-e8871d705043" />
+<img width="640" height="480" alt="pr_curve" src="https://github.com/user-attachments/assets/df425462-4046-4cc8-9f99-c41ca779d995" />
+<img width="3270" height="1766" alt="risk_factor_prevalence" src="https://github.com/user-attachments/assets/f7a3c1f2-25cd-4f0c-990e-509d0a7c823f" />
+<img width="640" height="480" alt="roc_curve" src="https://github.com/user-attachments/assets/c5cec4ac-6e15-4d33-98df-c456d4a1d026" />
+<img width="2371" height="1466" alt="salt_intake_distribution" src="https://github.com/user-attachments/assets/60771c37-e532-4266-a7a3-4719ff36e17e" />
+<img width="2371" height="1466" alt="sleep_hours_distribution" src="https://github.com/user-attachments/assets/da779541-2025-4745-9516-d20e64dff39f" />
+<img width="2370" height="1166" alt="systolic_bp_boxplot" src="https://github.com/user-attachments/assets/cd2bc358-a1ac-41a8-a62c-d1262620f8db" />
+<img width="2371" height="1466" alt="systolic_bp_distribution" src="https://github.com/user-attachments/assets/4e7afa9d-6fd2-4aa8-8cd0-3f5ecb7bfca9" />
+<img width="2371" height="1466" alt="target_distribution" src="https://github.com/user-attachments/assets/b025ae1c-0201-4853-9868-79479fad4e07" />
+<img width="2370" height="1166" alt="triglycerides_boxplot" src="https://github.com/user-attachments/assets/3bd9e2e9-52fd-481b-8df2-f0478017adfa" />
+<img width="2371" height="1466" alt="triglycerides_distribution" src="https://github.com/user-attachments/assets/bb978e7a-0b37-44c7-aee3-dae6aa81e6f8" />
 
 
 
