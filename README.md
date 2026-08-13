@@ -1302,7 +1302,7 @@ The strongest aspect of the project is its **leakage-aware modeling approach**. 
 
 ### 📄 Documentation
 
-`<YOUR_DOCUMENTATION_URL>`
+[View Project Documentation](https://docs.google.com/document/d/1IEAJ52XN7Bz5DdSRCGBraA4Ymdy2tBP/edit?usp=sharing&ouid=118205314568634968757&rtpof=true&sd=true)
 
 ---
 
