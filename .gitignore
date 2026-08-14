@@ -19,11 +19,13 @@ ENV/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data artifacts
+# Data artifacts (sample CSV is committed for Streamlit Cloud)
 data/raw/
 data/interim/
 data/processed/
 data/external/
+!data/sample/
+!data/sample/**
 
 # Model artifacts
 models/

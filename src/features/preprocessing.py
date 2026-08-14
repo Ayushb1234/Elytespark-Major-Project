@@ -12,7 +12,9 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 from src.features.feature_engg import HealthcareFeatureEngineer
 
 
-DATA_PATH = r"D:\programming\programming\python\age&genderdetection\yolov9\Resume History\Elytespark Major Project\IBM-Healthcare-AI\data\processed\clean_data.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "clean_data.csv"
+SAMPLE_DATA_PATH = PROJECT_ROOT / "data" / "sample" / "healthcare_sample.csv"
 
 
 class HealthcarePreprocessor:
@@ -21,11 +23,13 @@ class HealthcarePreprocessor:
         self,
         target="label",
         test_size=0.20,
-        random_state=42
+        random_state=42,
+        verbose=False,
     ):
         self.target = target
         self.test_size = test_size
         self.random_state = random_state
+        self.verbose = verbose
 
         self.preprocessor = None
         self.numeric_features = None
@@ -40,7 +44,10 @@ class HealthcarePreprocessor:
             "composite_key",
             "sublabel",
             "disease_flags",
-            "source_dataset"
+            "source_dataset",
+            "diabetes",
+            "hypertension",
+            "heart_disease",
         ]
 
         existing = [
@@ -70,9 +77,10 @@ class HealthcarePreprocessor:
         # Encode target labels so XGBoost and other models work properly
         y = self.label_encoder.fit_transform(y.astype(str))
 
-        print("\nTarget Encoding:")
-        for i, class_name in enumerate(self.label_encoder.classes_):
-            print(f"{class_name} -> {i}")
+        if self.verbose:
+            print("\nTarget Encoding:")
+            for i, class_name in enumerate(self.label_encoder.classes_):
+                print(f"{class_name} -> {i}")
 
         return X, y
 
@@ -92,11 +100,11 @@ class HealthcarePreprocessor:
             .tolist()
         )
 
-        print("\nNumerical Features:", len(self.numeric_features))
-        print(self.numeric_features)
-
-        print("\nCategorical Features:", len(self.categorical_features))
-        print(self.categorical_features)
+        if self.verbose:
+            print("\nNumerical Features:", len(self.numeric_features))
+            print(self.numeric_features)
+            print("\nCategorical Features:", len(self.categorical_features))
+            print(self.categorical_features)
 
     # --------------------------------------------
     # Build preprocessing pipeline
@@ -180,13 +188,14 @@ class HealthcarePreprocessor:
 def main():
     print("Loading dataset...")
 
-    df = pd.read_csv(DATA_PATH)
+    path = DATA_PATH if DATA_PATH.exists() else SAMPLE_DATA_PATH
+    df = pd.read_csv(path)
 
     print("Dataset Loaded Successfully")
     print("Shape:", df.shape)
     print(df.head())
 
-    processor = HealthcarePreprocessor()
+    processor = HealthcarePreprocessor(verbose=True)
 
     (
         X_train,

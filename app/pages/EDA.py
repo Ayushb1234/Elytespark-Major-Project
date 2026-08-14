@@ -17,10 +17,11 @@ for path in (APP_DIR, PROJECT_ROOT):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
-from components.utils import list_image_files, load_data
+from components.utils import list_image_files, load_data, sample_data_notice
 
 
 st.title("Exploratory Data Analysis")
+sample_data_notice()
 
 sns.set_theme(style="whitegrid")
 

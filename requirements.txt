@@ -1,13 +1,16 @@
-streamlit==1.49.1
-pandas==2.3.3
-numpy==2.2.6
-scikit-learn==1.7.1
-joblib==1.5.1
-matplotlib==3.10.5
-seaborn==0.13.2
-plotly==6.3.0
-xgboost==3.0.4
-imbalanced-learn==0.14.0
-scipy==1.16.1
-shap==0.48.0
-lime==0.2.0.1
+# Streamlit Community Cloud ignores runtime.txt / .python-version and currently
+# builds on Python 3.14, so every pin below must have a cp314 wheel. Exact "=="
+# pins force a source build (scipy then fails on the missing gfortran), which is
+# why lower bounds are used instead.
+streamlit>=1.61.1
+pandas>=2.3.3,<3
+numpy>=2.3.2,<3
+scipy>=1.16.1,<2
+scikit-learn>=1.7.2,<2
+joblib>=1.5.1
+matplotlib>=3.10.5
+seaborn>=0.13.2
+
+# shap, lime, xgboost and imbalanced-learn are only used by the offline
+# training/analysis scripts in src/. They are left out so the deployed app stays
+# within Community Cloud's build time and memory limits.

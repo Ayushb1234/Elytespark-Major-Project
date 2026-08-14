@@ -99,17 +99,17 @@ class HealthcareFeatureEngineer:
 
     def add_glucose_hba1c_interaction(self, df):
 
-        if {
-            "glucose",
-            "hba1c_level"
-        }.issubset(df.columns):
+        hba1c_col = next(
+            (
+                column
+                for column in ("HbA1c_level", "hba1c_level")
+                if column in df.columns
+            ),
+            None,
+        )
 
-            df["glucose_hba1c"] = (
-
-                df["glucose"]
-                * df["hba1c_level"]
-
-            )
+        if hba1c_col and "glucose" in df.columns:
+            df["glucose_hba1c"] = df["glucose"] * df[hba1c_col]
 
         return df
 

@@ -11,13 +11,19 @@ for path in (APP_DIR, PROJECT_ROOT):
 
 
 import streamlit as st
-from components.utils import load_data
+from components.utils import load_data, sample_data_notice
 
 
 st.title("Dataset Analytics")
 
+try:
+    df = load_data()
+except Exception as exc:
+    st.error("Unable to load the healthcare dataset.")
+    st.exception(exc)
+    st.stop()
 
-df = load_data()
+sample_data_notice()
 
 
 # ============================================================

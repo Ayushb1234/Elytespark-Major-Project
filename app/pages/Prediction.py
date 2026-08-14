@@ -1,10 +1,6 @@
 import sys
 from pathlib import Path
 
-# ============================================================
-# FIX IMPORT PATH
-# ============================================================
-
 APP_DIR = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -12,26 +8,20 @@ for path in (APP_DIR, PROJECT_ROOT):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
-
-# ============================================================
-# IMPORTS
-# ============================================================
-
-import streamlit as st
-import pandas as pd
 import numpy as np
+import pandas as pd
+import streamlit as st
 
 from components.utils import (
+    load_bundle,
     load_data,
-    load_model,
-    load_preprocessor,
-    load_label_encoder,
+    model_features,
+    sample_data_notice,
 )
-
 from src.features.preprocessing import HealthcarePreprocessor
 
-
 st.title("Disease Prediction")
+sample_data_notice()
 
 st.write(
     """
@@ -40,102 +30,43 @@ st.write(
     """
 )
 
-
-# ============================================================
-# LOAD DATA / MODEL
-# ============================================================
-
 try:
-
     df = load_data()
-
-    model = load_model()
-
-    preprocessor = load_preprocessor()
-
-    label_encoder = load_label_encoder()
-
+    bundle = load_bundle()
+    model = bundle["model"]
+    preprocessor = bundle["preprocessor"]
+    label_encoder = bundle["label_encoder"]
 except Exception as e:
-
-    st.error(
-        f"Unable to load model or data: {e}"
-    )
-
+    st.error(f"Unable to load model or data: {e}")
     st.stop()
 
-
-# ============================================================
-# INITIALIZE PROCESSOR
-# ============================================================
+if bundle.get("trained_in_app") and bundle.get("metrics"):
+    metrics = bundle["metrics"]
+    st.info(
+        "Model trained in-app on "
+        f"{bundle['training_rows']:,} rows "
+        f"(hold-out accuracy {metrics['accuracy']:.3f}, "
+        f"F1 {metrics['f1']:.3f}"
+        + (
+            f", ROC-AUC {metrics['roc_auc']:.3f}"
+            if "roc_auc" in metrics
+            else ""
+        )
+        + "). Place saved `.pkl` files under `models/` to skip training."
+    )
 
 processor = HealthcarePreprocessor()
 
-
-# ============================================================
-# PREPARE DATA STRUCTURE
-# ============================================================
-
 try:
-
-    # Remove columns that should never be supplied by user
-    # or used as prediction features.
-
-    working_df = processor.remove_leakage(
-        df.copy()
-    )
-
-    # Apply exactly the same feature engineering used
-    # during model training.
-
-    working_df = processor.engineer_features(
-        working_df
-    )
-
+    working_df = processor.remove_leakage(df.copy())
+    working_df = processor.engineer_features(working_df)
 except Exception as e:
-
-    st.error(
-        f"Feature engineering failed: {e}"
-    )
-
+    st.error(f"Feature engineering failed: {e}")
     st.stop()
 
-
-# ============================================================
-# GET FEATURES EXPECTED BY SAVED PREPROCESSOR
-# ============================================================
-
-try:
-
-    numeric_features = (
-        preprocessor
-        .transformers_[0][2]
-    )
-
-    categorical_features = (
-        preprocessor
-        .transformers_[1][2]
-    )
-
-    model_features = (
-        list(numeric_features)
-        + list(categorical_features)
-    )
-
-except Exception as e:
-
-    st.error(
-        f"Could not read features from preprocessor: {e}"
-    )
-
-    st.stop()
-
-
-# ============================================================
-# ENGINEERED FEATURES
-# ============================================================
-
-# These are calculated automatically.
-# The user should NOT enter them manually.
+model_feature_list = model_features(bundle)
+numeric_features = bundle["numeric_features"]
+categorical_features = bundle["categorical_features"]
 
 ENGINEERED_FEATURES = {
     "age_normalized",
@@ -144,523 +75,167 @@ ENGINEERED_FEATURES = {
     "cholesterol_hdl_ratio",
     "ldl_hdl_ratio",
     "bmi_age",
+    "glucose_hba1c",
 }
 
-
-# ============================================================
-# RAW INPUT FEATURES
-# ============================================================
-
-# Features that should actually be entered by the user.
-
 input_features = [
-    col
-    for col in model_features
-    if col not in ENGINEERED_FEATURES
+    col for col in model_feature_list if col not in ENGINEERED_FEATURES
 ]
 
-
-# ============================================================
-# SAMPLE DEFAULT VALUES
-# ============================================================
-
-sample_row = (
-    df.dropna(
-        axis=0,
-        how="all"
-    )
-    .iloc[0]
-    .to_dict()
-)
-
-
-# ============================================================
-# SPLIT INPUT TYPES
-# ============================================================
+sample_row = df.dropna(axis=0, how="all").iloc[0].to_dict()
 
 numeric_input_features = []
-
 categorical_input_features = []
 
-
 for col in input_features:
-
     if col in df.columns:
-
-        if pd.api.types.is_numeric_dtype(
-            df[col]
-        ):
-
-            numeric_input_features.append(
-                col
-            )
-
+        if pd.api.types.is_numeric_dtype(df[col]):
+            numeric_input_features.append(col)
         else:
-
-            categorical_input_features.append(
-                col
-            )
-
-
-# ============================================================
-# DISPLAY INFORMATION
-# ============================================================
+            categorical_input_features.append(col)
 
 st.info(
     "Enter the patient information and click Predict. "
     "Engineered features are calculated automatically."
 )
 
-
-# ============================================================
-# PREDICTION FORM
-# ============================================================
-
-with st.form(
-    "prediction_form"
-):
-
+with st.form("prediction_form"):
     input_data = {}
 
-
-    # ========================================================
-    # NUMERIC INPUTS
-    # ========================================================
-
-    st.subheader(
-        "Patient Measurements"
-    )
-
+    st.subheader("Patient Measurements")
     numeric_columns = st.columns(2)
 
-    for index, col in enumerate(
-        numeric_input_features
-    ):
-
+    for index, col in enumerate(numeric_input_features):
         with numeric_columns[index % 2]:
-
-            if (
-                col in sample_row
-                and pd.notna(
-                    sample_row[col]
-                )
-            ):
-
+            if col in sample_row and pd.notna(sample_row[col]):
                 try:
-
-                    default_value = float(
-                        sample_row[col]
-                    )
-
+                    default_value = float(sample_row[col])
                 except Exception:
-
                     default_value = 0.0
-
             else:
-
                 default_value = 0.0
 
-
             input_data[col] = st.number_input(
-
-                col.replace(
-                    "_",
-                    " "
-                ).title(),
-
+                col.replace("_", " ").title(),
                 value=default_value,
-
-                format="%.4f"
+                format="%.4f",
             )
 
-
-    # ========================================================
-    # CATEGORICAL INPUTS
-    # ========================================================
-
-    st.subheader(
-        "Patient Information"
-    )
-
+    st.subheader("Patient Information")
     categorical_columns = st.columns(2)
 
-
-    for index, col in enumerate(
-        categorical_input_features
-    ):
-
+    for index, col in enumerate(categorical_input_features):
         with categorical_columns[index % 2]:
-
-            # Get possible values from original dataset
-
             options = sorted(
-                df[col]
-                .dropna()
-                .astype(str)
-                .unique()
-                .tolist()
+                df[col].dropna().astype(str).unique().tolist()
             )
-
-
             if not options:
+                options = ["Unknown"]
 
-                options = [
-                    "Unknown"
-                ]
-
-
-            # Default value
-
-            if (
-                col in sample_row
-                and pd.notna(
-                    sample_row[col]
-                )
-            ):
-
-                default_value = str(
-                    sample_row[col]
-                )
-
+            if col in sample_row and pd.notna(sample_row[col]):
+                default_value = str(sample_row[col])
             else:
-
                 default_value = options[0]
-
 
             if default_value not in options:
-
                 default_value = options[0]
 
-
             input_data[col] = st.selectbox(
-
-                col.replace(
-                    "_",
-                    " "
-                ).title(),
-
+                col.replace("_", " ").title(),
                 options,
-
-                index=options.index(
-                    default_value
-                )
+                index=options.index(default_value),
             )
 
-
-    # ========================================================
-    # PREDICT BUTTON
-    # ========================================================
-
-    submit = st.form_submit_button(
-        "Predict Disease Risk"
-    )
-
-
-# ============================================================
-# PREDICTION
-# ============================================================
+    submit = st.form_submit_button("Predict Disease Risk")
 
 if submit:
-
     try:
-
         st.divider()
+        st.subheader("Processing Patient Data...")
 
-        st.subheader(
-            "Processing Patient Data..."
-        )
-
-
-        # ====================================================
-        # CREATE RAW PATIENT DATAFRAME
-        # ====================================================
-
-        patient_df = pd.DataFrame(
-            [input_data]
-        )
-
-
-        # ====================================================
-        # MAKE SURE RAW COLUMNS EXIST
-        # ====================================================
+        patient_df = pd.DataFrame([input_data])
 
         for col in input_features:
-
             if col not in patient_df.columns:
-
                 if col in df.columns:
-
                     patient_df[col] = (
-                        df[col]
-                        .median()
-                        if pd.api.types.is_numeric_dtype(
-                            df[col]
-                        )
-                        else df[col]
-                        .mode()
-                        .iloc[0]
+                        df[col].median()
+                        if pd.api.types.is_numeric_dtype(df[col])
+                        else df[col].mode().iloc[0]
                     )
-
                 else:
-
                     patient_df[col] = 0
 
+        patient_engineered = processor.engineer_features(patient_df.copy())
 
-        # ====================================================
-        # FEATURE ENGINEERING
-        # ====================================================
-
-        patient_engineered = (
-            processor
-            .engineer_features(
-                patient_df.copy()
-            )
-        )
-
-
-        # ====================================================
-        # ENSURE ALL MODEL FEATURES EXIST
-        # ====================================================
-
-        for col in model_features:
-
+        for col in model_feature_list:
             if col not in patient_engineered.columns:
-
                 patient_engineered[col] = 0
 
-
-        # ====================================================
-        # SELECT EXACT MODEL FEATURES
-        # ====================================================
-
-        patient_engineered = (
-            patient_engineered[
-                model_features
-            ]
-        )
-
-
-        # ====================================================
-        # TRANSFORM USING SAVED PREPROCESSOR
-        # ====================================================
-
-        patient_processed = (
-            preprocessor
-            .transform(
-                patient_engineered
-            )
-        )
-
-
-        # ====================================================
-        # MODEL PREDICTION
-        # ====================================================
-
-        prediction = model.predict(
-            patient_processed
-        )[0]
-
-
-        # ====================================================
-        # DECODE LABEL
-        # ====================================================
+        patient_engineered = patient_engineered[model_feature_list]
+        patient_processed = preprocessor.transform(patient_engineered)
+        prediction = model.predict(patient_processed)[0]
 
         try:
-
-            predicted_label = (
-                label_encoder
-                .inverse_transform(
-                    [prediction]
-                )[0]
-            )
-
+            predicted_label = label_encoder.inverse_transform([prediction])[0]
         except Exception:
-
-            predicted_label = str(
-                prediction
-            )
-
-
-        # ====================================================
-        # PROBABILITY
-        # ====================================================
+            predicted_label = str(prediction)
 
         confidence = None
-
         probabilities = None
 
-        if hasattr(
-            model,
-            "predict_proba"
-        ):
+        if hasattr(model, "predict_proba"):
+            probabilities = model.predict_proba(patient_processed)[0]
+            confidence = float(np.max(probabilities))
 
-            probabilities = (
-                model
-                .predict_proba(
-                    patient_processed
-                )[0]
-            )
+        st.subheader("Prediction Result")
 
-            confidence = float(
-                np.max(
-                    probabilities
-                )
-            )
-
-
-        # ====================================================
-        # DISPLAY RESULT
-        # ====================================================
-
-        st.subheader(
-            "Prediction Result"
-        )
-
-
-        if str(
-            predicted_label
-        ).lower() == "abnormal":
-
-            st.error(
-                f"Prediction: {predicted_label}"
-            )
-
+        if str(predicted_label).lower() == "abnormal":
+            st.error(f"Prediction: {predicted_label}")
         else:
-
-            st.success(
-                f"Prediction: {predicted_label}"
-            )
-
-
-        # ====================================================
-        # CONFIDENCE
-        # ====================================================
+            st.success(f"Prediction: {predicted_label}")
 
         if confidence is not None:
-
-            st.metric(
-                "Prediction Confidence",
-                f"{confidence:.2%}"
-            )
-
-            st.progress(
-                min(
-                    max(
-                        confidence,
-                        0.0
-                    ),
-                    1.0
-                )
-            )
-
-
-        # ====================================================
-        # CLASS PROBABILITIES
-        # ====================================================
+            st.metric("Prediction Confidence", f"{confidence:.2%}")
+            st.progress(min(max(confidence, 0.0), 1.0))
 
         if probabilities is not None:
-
-            st.subheader(
-                "Class Probabilities"
-            )
-
-
-            probability_data = []
-
-            for class_name, probability in zip(
-                label_encoder.classes_,
-                probabilities
-            ):
-
-                probability_data.append({
-
-                    "Class":
-                        class_name,
-
-                    "Probability":
-                        f"{probability:.2%}"
-
-                })
-
-
-            probability_df = pd.DataFrame(
-                probability_data
-            )
-
-
-            st.dataframe(
-                probability_df,
-                use_container_width=True
-            )
-
-
-        # ====================================================
-        # INPUT SUMMARY
-        # ====================================================
-
-        with st.expander(
-            "View Patient Input"
-        ):
-
-            input_display = pd.DataFrame({
-
-                "Feature": list(
-                    input_data.keys()
-                ),
-
-                "Value": list(
-                    input_data.values()
+            st.subheader("Class Probabilities")
+            probability_data = [
+                {"Class": class_name, "Probability": f"{probability:.2%}"}
+                for class_name, probability in zip(
+                    label_encoder.classes_, probabilities
                 )
-
-            })
-
-
+            ]
             st.dataframe(
-                input_display,
-                use_container_width=True
+                pd.DataFrame(probability_data),
+                use_container_width=True,
             )
 
+        with st.expander("View Patient Input"):
+            st.dataframe(
+                pd.DataFrame(
+                    {
+                        "Feature": list(input_data.keys()),
+                        "Value": list(input_data.values()),
+                    }
+                ),
+                use_container_width=True,
+            )
 
-        # ====================================================
-        # ENGINEERED FEATURES
-        # ====================================================
-
-        with st.expander(
-            "View Automatically Generated Features"
-        ):
-
-            engineered_display = {}
-
-            for feature in ENGINEERED_FEATURES:
-
-                if feature in patient_engineered.columns:
-
-                    engineered_display[
-                        feature
-                    ] = patient_engineered[
-                        feature
-                    ].iloc[0]
-
-
+        with st.expander("View Automatically Generated Features"):
+            engineered_display = {
+                feature: patient_engineered[feature].iloc[0]
+                for feature in ENGINEERED_FEATURES
+                if feature in patient_engineered.columns
+            }
             if engineered_display:
-
                 st.dataframe(
-                    pd.DataFrame(
-                        [
-                            engineered_display
-                        ]
-                    ).T.rename(
-                        columns={
-                            0: "Value"
-                        }
+                    pd.DataFrame([engineered_display]).T.rename(
+                        columns={0: "Value"}
                     )
                 )
 
-
     except Exception as e:
-
-        st.error(
-            "Prediction failed."
-        )
-
+        st.error("Prediction failed.")
         st.exception(e)

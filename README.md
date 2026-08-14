@@ -80,7 +80,7 @@ Raw Healthcare Data
 ## Best Model Made 4 - https://drive.google.com/file/d/1uzpfzaJaKCXdvM8KS8A1Myvn6U1ayReX/view?usp=sharing
 
 
-## Deployment Link: 
+## Deployment Link: https://elytespark-major-project-bx6dmaujgrgp8aztbdpx4b.streamlit.app/ 
 
 ## 🎯 Project Objectives
 
@@ -1189,8 +1189,8 @@ Machine learning predictions should be reviewed by qualified healthcare professi
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd IBM-Healthcare-AI
+git clone https://github.com/Ayushb1234/Elytespark-Major-Project.git
+cd Elytespark-Major-Project
 ```
 
 ### 2️⃣ Create Environment
@@ -1211,31 +1211,35 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Run Model Pipeline
+### 4️⃣ Launch Dashboard
 
-```bash
-python -m src.models.train
-```
-
-### 5️⃣ Run Explainability
-
-```bash
-python -m src.explainability.explain
-```
-
-### 6️⃣ Launch Dashboard
+The deployed app does **not** require the 90 MB processed CSV or saved `.pkl` models.
+It ships with `data/sample/healthcare_sample.csv` and trains a Random Forest in-app on first use (cached).
 
 ```bash
 streamlit run app/app.py
 ```
 
-or:
+Optional local full-data workflow:
 
 ```bash
-streamlit run app/main.py
+# Place clean_data.csv under data/processed/
+# Optionally place best_model.pkl / preprocessor.pkl / label_encoder.pkl under models/
+python -m src.data.make_sample   # regenerate the committed sample
+streamlit run app/app.py
 ```
 
 ---
+
+## ☁️ Streamlit Community Cloud
+
+1. Deploy with main file: `app/app.py`
+2. In **Advanced settings**, set Python to **3.12** or **3.13** if the UI allows it (Community Cloud may still default to 3.14)
+3. `requirements.txt` uses lower-bound pins with **cp314 wheels** so installs succeed even on Python 3.14 (exact `==` pins were causing scipy source builds and the missing `gfortran` failure)
+4. Heavy offline packages (`shap`, `lime`, `xgboost`, `imbalanced-learn`) are intentionally omitted from deploy requirements
+5. Do **not** commit `data/processed/clean_data.csv` (~90 MB) or large model binaries
+
+If install still fails after a push, reboot the app from the Streamlit dashboard so it re-resolves dependencies.
 
 ## 🧪 Recommended Execution Order
 
